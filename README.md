@@ -25,7 +25,7 @@ Este repositório (`Analises-quimioinformatica-2.0`) representa a evolução nat
 
 ---
 
-##  Tecnologias Utilizadas
+## Tecnologias Utilizadas
 * **Python 3** — Linguagem principal do pipeline
 * **RDKit** — Química computacional, descritores e validação estrutural
 * **PubChemPy** — Consulta e integração com a base de dados do PubChem
