@@ -1,4 +1,7 @@
 import os
+import openpyxl
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
 import pandas as pd
 
 # Cria a pasta de saídas se não existir
@@ -23,12 +26,70 @@ dados = {
 
 df = pd.DataFrame(dados)
 
-# 1. Gerar planilha Excel estruturada
 excel_path = "outputs/dashboard_quimioinformatica_v2.xlsx"
-with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
-    df.to_excel(writer, sheet_name="Resultados ADMET", index=False)
 
-print(f"[SUCESSO] Planilha Excel gerada em: {excel_path}")
+# Criando o arquivo Excel com openpyxl para estilização avançada de dashboard
+wb = openpyxl.Workbook()
+
+# Aba 1: Dashboard Executivo
+ws_dash = wb.active
+ws_dash.title = "Dashboard Executivo"
+ws_dash.views.sheetView[0].showGridLines = True
+
+# Paleta de cores corporativa/científica (Azul escuro e cinza claro)
+header_fill = PatternFill(
+    start_color="1F4E78", end_color="1F4E78", fill_type="solid"
+)
+header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+title_font = Font(name="Calibri", size=16, bold=True, color="1F4E78")
+card_fill = PatternFill(
+    start_color="F2F2F2", end_color="F2F2F2", fill_type="solid"
+)
+border_thin = Border(
+    left=Side(style="thin", color="D9D9D9"),
+    right=Side(style="thin", color="D9D9D9"),
+    top=Side(style="thin", color="D9D9D9"),
+    bottom=Side(style="thin", color="D9D9D9"),
+)
+
+# Título do Dashboard
+ws_dash["B2"] = "Painel de Controle - Triagem Quimioinformática v2.0"
+ws_dash["B2"].font = title_font
+
+# Cartões de Resumo (KPIs)
+ws_dash["B4"] = "Total de Compostos"
+ws_dash["B5"] = len(df)
+ws_dash["D4"] = "Status do Pipeline"
+ws_dash["D5"] = "Aprovado / Concluído"
+
+for col in ["B4", "B5", "D4", "D5"]:
+  cell = ws_dash[col]
+  cell.fill = card_fill
+  cell.alignment = Alignment(horizontal="center", vertical="center")
+  cell.border = border_thin
+
+# Tabela de Dados detalhados no Dashboard
+row_start = 8
+ws_dash.cell(row=row_start, column=2, value="Resultados Detalhados ADMET").font = (
+    Font(name="Calibri", size=12, bold=True)
+)
+
+headers = list(df.columns)
+for col_idx, header in enumerate(headers, start=2):
+  cell = ws_dash.cell(row=row_start + 1, column=col_idx, value=header)
+  cell.fill = header_fill
+  cell.font = header_font
+  cell.alignment = Alignment(horizontal="center", vertical="center")
+
+for r_idx, row in df.iterrows():
+  for c_idx, val in enumerate(row, start=2):
+    cell = ws_dash.cell(row=row_start + 2 + r_idx, column=c_idx, value=val)
+    cell.border = border_thin
+    cell.alignment = Alignment(horizontal="left", vertical="center")
+
+# Salvando a planilha estilizada
+wb.save(excel_path)
+print(f"[SUCESSO] Dashboard Excel estruturado gerado em: {excel_path}")
 
 # 2. Gerar relatório HTML completo
 html_path = "outputs/relatorio_v2.html"
