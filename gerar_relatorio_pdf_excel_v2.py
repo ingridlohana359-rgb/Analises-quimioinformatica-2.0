@@ -8,7 +8,7 @@ import pandas as pd
 # Cria a pasta de saídas se não existir
 os.makedirs("outputs", exist_ok=True)
 
-# Dados estruturados seguindo o padrão original
+# Dados estruturados
 dados = {
     "ID": ["PubChem_2244", "PubChem_3672", "PubChem_148"],
     "Peso Molecular": [180.16, 194.19, 151.16],
@@ -20,13 +20,13 @@ df = pd.DataFrame(dados)
 
 excel_path = "outputs/dashboard_quimioinformatica_v2.xlsx"
 
-# Criando o workbook e configurando a aba principal no padrão do projeto 1.0
+# Criando o workbook
 wb = openpyxl.Workbook()
 ws = wb.active
 ws.title = "Dashboard Executivo"
 ws.views.sheetView[0].showGridLines = True
 
-# Estilos e Cores (Padrão corporativo/científico)
+# Estilos e Cores
 font_title = Font(name="Calibri", size=14, bold=True, color="1F4E78")
 font_header = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
 font_bold = Font(name="Calibri", size=11, bold=True, color="000000")
@@ -64,7 +64,7 @@ ws["B5"].font = font_title
 ws["B5"].alignment = Alignment(horizontal="center", vertical="center")
 ws["B5"].fill = fill_card
 
-# Peso Molecular Médio (Corrigido para C10:C12)
+# Peso Molecular Médio (Linhas 10 a 12 da coluna C)
 ws.merge_cells("E4:F4")
 ws["E4"] = "Peso Molecular Médio"
 ws["E4"].font = font_bold
@@ -73,12 +73,12 @@ ws["E4"].fill = fill_card
 
 ws.merge_cells("E5:F5")
 ws["E5"] = "=AVERAGE(C10:C12)"
-ws["E5"].number_format = "#,##0.20"
+ws["E5"].number_format = "#,##0.00"
 ws["E5"].font = font_title
 ws["E5"].alignment = Alignment(horizontal="center", vertical="center")
 ws["E5"].fill = fill_card
 
-# LogP Médio (Corrigido para D10:D12)
+# LogP Médio (Linhas 10 a 12 da coluna D)
 ws.merge_cells("H4:I4")
 ws["H4"] = "LogP Médio"
 ws["H4"].font = font_bold
@@ -87,7 +87,7 @@ ws["H4"].fill = fill_card
 
 ws.merge_cells("H5:I5")
 ws["H5"] = "=AVERAGE(D10:D12)"
-ws["H5"].number_format = "#,##0.20"
+ws["H5"].number_format = "#,##0.00"
 ws["H5"].font = font_title
 ws["H5"].alignment = Alignment(horizontal="center", vertical="center")
 ws["H5"].fill = fill_card
@@ -97,7 +97,7 @@ for row in range(4, 6):
   for col in [2, 3, 5, 6, 8, 9]:
     ws.cell(row=row, column=col).border = border_thin
 
-# 3. Tabela de Dados Principais (A partir da linha 9 para cabeçalho e 10 para dados)
+# 3. Tabela de Dados Principais (Cabeçalho na linha 9, dados nas linhas 10, 11, 12)
 ws["B8"] = "Candidatos Aprovados"
 ws["B8"].font = font_bold
 
@@ -108,7 +108,6 @@ for c_idx, h in enumerate(headers, start=2):
   cell.fill = fill_header
   cell.alignment = Alignment(horizontal="center", vertical="center")
 
-# Preenchendo os dados (linhas 10, 11 e 12)
 for r_idx, row in df.iterrows():
   row_num = 10 + r_idx
   ws.cell(row=row_num, column=2, value=row["ID"]).alignment = Alignment(
@@ -163,4 +162,4 @@ for col, width in col_widths.items():
 
 # Salvando a planilha
 wb.save(excel_path)
-print(f"[SUCESSO] Dashboard com médias corrigidas gerado em: {excel_path}")
+print(f"[SUCESSO] Dashboard corrigido gerado em: {excel_path}")
