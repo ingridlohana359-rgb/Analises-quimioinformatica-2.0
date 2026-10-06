@@ -64,7 +64,7 @@ ws["B5"].font = font_title
 ws["B5"].alignment = Alignment(horizontal="center", vertical="center")
 ws["B5"].fill = fill_card
 
-# Peso Molecular Médio
+# Peso Molecular Médio (Corrigido para C10:C12)
 ws.merge_cells("E4:F4")
 ws["E4"] = "Peso Molecular Médio"
 ws["E4"].font = font_bold
@@ -72,13 +72,13 @@ ws["E4"].alignment = Alignment(horizontal="center", vertical="center")
 ws["E4"].fill = fill_card
 
 ws.merge_cells("E5:F5")
-ws["E5"] = "=AVERAGE(C9:C11)"
+ws["E5"] = "=AVERAGE(C10:C12)"
 ws["E5"].number_format = "#,##0.20"
 ws["E5"].font = font_title
 ws["E5"].alignment = Alignment(horizontal="center", vertical="center")
 ws["E5"].fill = fill_card
 
-# LogP Médio
+# LogP Médio (Corrigido para D10:D12)
 ws.merge_cells("H4:I4")
 ws["H4"] = "LogP Médio"
 ws["H4"].font = font_bold
@@ -86,7 +86,7 @@ ws["H4"].alignment = Alignment(horizontal="center", vertical="center")
 ws["H4"].fill = fill_card
 
 ws.merge_cells("H5:I5")
-ws["H5"] = "=AVERAGE(D9:D11)"
+ws["H5"] = "=AVERAGE(D10:D12)"
 ws["H5"].number_format = "#,##0.20"
 ws["H5"].font = font_title
 ws["H5"].alignment = Alignment(horizontal="center", vertical="center")
@@ -97,7 +97,7 @@ for row in range(4, 6):
   for col in [2, 3, 5, 6, 8, 9]:
     ws.cell(row=row, column=col).border = border_thin
 
-# 3. Tabela de Dados Principais (A partir da linha 8)
+# 3. Tabela de Dados Principais (A partir da linha 9 para cabeçalho e 10 para dados)
 ws["B8"] = "Candidatos Aprovados"
 ws["B8"].font = font_bold
 
@@ -108,7 +108,7 @@ for c_idx, h in enumerate(headers, start=2):
   cell.fill = fill_header
   cell.alignment = Alignment(horizontal="center", vertical="center")
 
-# Preenchendo os dados
+# Preenchendo os dados (linhas 10, 11 e 12)
 for r_idx, row in df.iterrows():
   row_num = 10 + r_idx
   ws.cell(row=row_num, column=2, value=row["ID"]).alignment = Alignment(
@@ -128,7 +128,7 @@ for r_idx, row in df.iterrows():
     ws.cell(row=row_num, column=c_idx).border = border_thin
     ws.cell(row=row_num, column=c_idx).font = font_normal
 
-# 4. Inserindo o Gráfico de Barras (Igual ao Projeto 1.0)
+# 4. Inserindo o Gráfico de Barras
 chart = BarChart()
 chart.type = "col"
 chart.style = 10
@@ -136,8 +136,8 @@ chart.title = "Comparativo de Peso Molecular por Candidato"
 chart.y_axis.title = "Peso Molecular (g/mol)"
 chart.x_axis.title = "ID do Composto"
 
-data_ref = Reference(ws, min_col=3, min_row=9, max_row=11)
-cats_ref = Reference(ws, min_col=2, min_row=10, max_row=11)
+data_ref = Reference(ws, min_col=3, min_row=9, max_row=12)
+cats_ref = Reference(ws, min_col=2, min_row=10, max_row=12)
 chart.add_data(data_ref, titles_from_data=True)
 chart.set_categories(cats_ref)
 chart.height = 7.5
@@ -145,7 +145,7 @@ chart.width = 13
 
 ws.add_chart(chart, "G8")
 
-# 5. Ajustando larguras das colunas para evitar texto cortado
+# 5. Ajustando larguras das colunas
 col_widths = {
     "A": 3,
     "B": 18,
@@ -163,4 +163,4 @@ for col, width in col_widths.items():
 
 # Salvando a planilha
 wb.save(excel_path)
-print(f"[SUCESSO] Dashboard idêntico ao padrão gerado em: {excel_path}")
+print(f"[SUCESSO] Dashboard com médias corrigidas gerado em: {excel_path}")
